@@ -1,0 +1,182 @@
+/* ===== Layout ===== */
+.wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-family: "Noto Serif JP", "Yu Mincho", "游明朝", serif;
+  user-select: none;
+}
+
+/* ===== Board ===== */
+.boardWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.boardAndRowLabels {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  border: 2px solid #5c3a1e;
+  background-color: #f5deb3;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== Cell ===== */
+.cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 60px;
+  border-right: 1px solid #a0703a;
+  border-bottom: 1px solid #a0703a;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.1s;
+}
+
+.cell:hover {
+  background-color: rgba(255, 220, 100, 0.35);
+}
+
+.cellLastCol {
+  border-right: none;
+}
+
+.cellLastRow {
+  border-bottom: none;
+}
+
+.cellSelected {
+  background-color: rgba(90, 190, 90, 0.45) !important;
+}
+
+.cellLegal {
+  background-color: rgba(100, 180, 255, 0.2);
+}
+
+.cellLastMove {
+  background-color: rgba(255, 200, 60, 0.4);
+}
+
+
+/* ===== Legal move indicators ===== */
+.legalDot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(50, 140, 240, 0.6);
+  pointer-events: none;
+}
+
+.legalOverlay {
+  position: absolute;
+  inset: 2px;
+  border: 2px solid rgba(50, 140, 240, 0.7);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* ===== Labels ===== */
+.colLabels {
+  display: grid;
+  grid-template-columns: repeat(9, 54px);
+  padding-right: 20px; /* row label width compensation */
+}
+
+.colLabel {
+  text-align: center;
+  font-size: 13px;
+  color: #5c3a1e;
+  line-height: 1.5;
+}
+
+.rowLabels {
+  display: flex;
+  flex-direction: column;
+}
+
+.rowLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 60px;
+  font-size: 12px;
+  color: #5c3a1e;
+}
+
+/* ===== Hand pieces ===== */
+.hand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 486px; /* 9 * 54px = 486 */
+  min-height: 52px;
+  padding: 6px 10px;
+  background-color: #e8d0a0;
+  border: 1px solid #a0703a;
+  border-radius: 4px;
+}
+
+.handTop {
+  flex-direction: row-reverse;
+}
+
+.handBottom {
+  flex-direction: row;
+}
+
+.handLabel {
+  font-size: 12px;
+  color: #5c3a1e;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.handPieces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.handPiece {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 48px;
+  background-color: #f5deb3;
+  border: 1px solid #a0703a;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.1s, box-shadow 0.1s;
+}
+
+.handPiece:hover {
+  background-color: rgba(255, 220, 100, 0.6);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.handCount {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+  font-size: 11px;
+  color: #5c3a1e;
+  line-height: 1;
+}

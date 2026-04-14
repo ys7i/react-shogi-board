@@ -1,0 +1,108 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-family: "Noto Serif JP", "Yu Mincho", "游明朝", serif;
+}
+
+/* ===== Status bar ===== */
+.statusBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 490px;
+  padding: 6px 12px;
+  background-color: #e8d0a0;
+  border: 1px solid #a0703a;
+  border-radius: 4px;
+}
+
+.turnLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3a1e00;
+}
+
+.resetButton {
+  font-size: 12px;
+  padding: 4px 12px;
+  background-color: #f5deb3;
+  border: 1px solid #a0703a;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #3a1e00;
+  font-family: inherit;
+  transition: background-color 0.15s;
+}
+
+.resetButton:hover {
+  background-color: #e8c87a;
+}
+
+/* ===== Promotion dialog ===== */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 4px;
+}
+
+.dialog {
+  background-color: #fdf6e3;
+  border: 2px solid #5c3a1e;
+  border-radius: 8px;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.dialogTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.dialogButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.dialogButton {
+  padding: 10px 24px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #5c3a1e;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+.dialogButtonPromote {
+  background-color: #5c3a1e;
+  color: #f5deb3;
+}
+
+.dialogButtonPromote:hover {
+  background-color: #7a4f28;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.dialogButtonNoPromote {
+  background-color: #f5deb3;
+  color: #3a1e00;
+}
+
+.dialogButtonNoPromote:hover {
+  background-color: #e8c87a;
+}
