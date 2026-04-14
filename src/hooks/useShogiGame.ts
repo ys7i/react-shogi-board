@@ -1,7 +1,12 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Shogi, Color, Piece } from "shogi.js";
 import type { Kind } from "shogi.js";
 import type { SquarePos } from "../components/ShogiBoard";
+
+export interface UseShogiGameOptions {
+  initialSfen?: string;
+  onChange?: (sfen: string) => void;
+}
 
 export interface UseShogiGameReturn {
   shogi: Shogi;
@@ -18,6 +23,7 @@ export interface UseShogiGameReturn {
   onHandClick: (kind: Kind, color: 0 | 1) => void;
   onPromote: (promote: boolean) => void;
   reset: () => void;
+  moveExternal: (fromX: number, fromY: number, toX: number, toY: number, promote?: boolean) => void;
 }
 
 function canReachPromoZone(color: Color, y: number): boolean {
@@ -34,8 +40,17 @@ function mustPromote(kind: Kind, color: Color, y: number): boolean {
   return false;
 }
 
-export function useShogiGame(): UseShogiGameReturn {
-  const [shogi] = useState(() => new Shogi());
+export function useShogiGame(options: UseShogiGameOptions = {}): UseShogiGameReturn {
+  const { initialSfen } = options;
+  // onChange を ref で保持してコールバックの参照変化に依存しないようにする
+  const onChangeRef = useRef(options.onChange);
+  onChangeRef.current = options.onChange;
+
+  const [shogi] = useState(() => {
+    const s = new Shogi();
+    if (initialSfen) s.initializeFromSFENString(initialSfen);
+    return s;
+  });
   const [, forceRender] = useState(0);
   const [selectedSquare, setSelectedSquare] = useState<SquarePos | null>(null);
   const [selectedHandKind, setSelectedHandKind] = useState<{
@@ -50,6 +65,10 @@ export function useShogiGame(): UseShogiGameReturn {
   } | null>(null);
 
   const refresh = useCallback(() => forceRender((n) => n + 1), []);
+
+  const notifyChange = useCallback(() => {
+    onChangeRef.current?.(shogi.toSFENString());
+  }, [shogi]);
 
   const legalSquares = useMemo((): SquarePos[] => {
     if (selectedHandKind) {
@@ -75,6 +94,7 @@ export function useShogiGame(): UseShogiGameReturn {
           shogi.drop(x, y, selectedHandKind.kind);
           setLastMove(pos);
           refresh();
+          notifyChange();
         }
         setSelectedHandKind(null);
         setSelectedSquare(null);
@@ -108,6 +128,7 @@ export function useShogiGame(): UseShogiGameReturn {
               setLastMove(pos);
               setSelectedSquare(null);
               refresh();
+              notifyChange();
             } else {
               setPromotionPending({ from, to: pos, kind: fromPiece.kind });
               setSelectedSquare(null);
@@ -117,6 +138,7 @@ export function useShogiGame(): UseShogiGameReturn {
             setLastMove(pos);
             setSelectedSquare(null);
             refresh();
+            notifyChange();
           }
           return;
         }
@@ -137,7 +159,7 @@ export function useShogiGame(): UseShogiGameReturn {
         setSelectedSquare(pos);
       }
     },
-    [legalSquares, refresh, selectedHandKind, selectedSquare, shogi]
+    [legalSquares, notifyChange, refresh, selectedHandKind, selectedSquare, shogi]
   );
 
   const onHandClick = useCallback(
@@ -159,20 +181,38 @@ export function useShogiGame(): UseShogiGameReturn {
         shogi.move(from.x, from.y, to.x, to.y, promote);
         setLastMove(to);
         refresh();
+        notifyChange();
       }
       setPromotionPending(null);
     },
-    [promotionPending, refresh, shogi]
+    [notifyChange, promotionPending, refresh, shogi]
   );
 
   const reset = useCallback(() => {
-    shogi.initialize();
+    if (initialSfen) {
+      shogi.initializeFromSFENString(initialSfen);
+    } else {
+      shogi.initialize();
+    }
     setSelectedSquare(null);
     setSelectedHandKind(null);
     setLastMove(null);
     setPromotionPending(null);
     refresh();
-  }, [refresh, shogi]);
+    notifyChange();
+  }, [initialSfen, notifyChange, refresh, shogi]);
+
+  const moveExternal = useCallback(
+    (fromX: number, fromY: number, toX: number, toY: number, promote = false) => {
+      shogi.move(fromX, fromY, toX, toY, promote);
+      setLastMove({ x: toX, y: toY });
+      setSelectedSquare(null);
+      setSelectedHandKind(null);
+      refresh();
+      notifyChange();
+    },
+    [notifyChange, refresh, shogi]
+  );
 
   return {
     shogi,
@@ -184,5 +224,6 @@ export function useShogiGame(): UseShogiGameReturn {
     onHandClick,
     onPromote,
     reset,
+    moveExternal,
   };
 }

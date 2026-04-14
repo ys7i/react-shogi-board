@@ -1,2 +1,2 @@
 export { InteractiveBoard } from "./InteractiveBoard";
-export type { InteractiveBoardProps } from "./InteractiveBoard";
+export type { InteractiveBoardProps, InteractiveBoardHandle } from "./InteractiveBoard";
