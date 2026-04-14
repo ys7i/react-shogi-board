@@ -1,15 +1,28 @@
+import { forwardRef, useImperativeHandle } from "react";
 import Color from "shogi.js/cjs/Color";
 import { ShogiBoard } from "../ShogiBoard";
 import { useShogiGame } from "../../hooks/useShogiGame";
 import { kindToKanji } from "../../utils/pieceUtils";
 import styles from "./InteractiveBoard.module.css";
 
+export interface InteractiveBoardHandle {
+  /** 外部から駒を動かす */
+  move: (fromX: number, fromY: number, toX: number, toY: number, promote?: boolean) => void;
+  /** 初期局面に戻す */
+  reset: () => void;
+}
+
 export interface InteractiveBoardProps {
   /** 後手視点で表示するか */
   flipped?: boolean;
+  /** 初期局面の SFEN 文字列（省略時は平手） */
+  initialSfen?: string;
+  /** 盤面が変化するたびに現在の SFEN を通知 */
+  onChange?: (sfen: string) => void;
 }
 
-export function InteractiveBoard({ flipped = false }: InteractiveBoardProps) {
+export const InteractiveBoard = forwardRef<InteractiveBoardHandle, InteractiveBoardProps>(
+  function InteractiveBoard({ flipped = false, initialSfen, onChange }, ref) {
   const {
     shogi,
     selectedSquare,
@@ -20,7 +33,10 @@ export function InteractiveBoard({ flipped = false }: InteractiveBoardProps) {
     onHandClick,
     onPromote,
     reset,
-  } = useShogiGame();
+    moveExternal,
+  } = useShogiGame({ initialSfen, onChange });
+
+  useImperativeHandle(ref, () => ({ move: moveExternal, reset }), [moveExternal, reset]);
 
   const turnLabel = shogi.turn === Color.Black ? "先手番" : "後手番";
 
@@ -69,4 +85,4 @@ export function InteractiveBoard({ flipped = false }: InteractiveBoardProps) {
       </div>
     </div>
   );
-}
+});

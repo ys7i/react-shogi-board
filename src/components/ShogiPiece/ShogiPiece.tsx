@@ -18,12 +18,12 @@ const PIECE_H = 46;
 //  top center  → right shoulder → bottom right → bottom left → left shoulder
 const PIECE_PATH = `
   M ${PIECE_W / 2} 2
-  L ${PIECE_W - 2} 16
+  L ${PIECE_W - 6} 8
   L ${PIECE_W - 2} ${PIECE_H - 3}
   Q ${PIECE_W - 2} ${PIECE_H} ${PIECE_W - 5} ${PIECE_H}
   L 5 ${PIECE_H}
   Q 2 ${PIECE_H} 2 ${PIECE_H - 3}
-  L 2 16
+  L 6 8
   Z
 `.trim();
 
@@ -59,7 +59,14 @@ export function ShogiPiece({
   const shadowId  = `shadow-${kind}-${color}`;
 
   const textColor = isPromoted ? "#b52020" : "#1a1008";
-  const fontSize = kind.length > 1 ? 13 : 16; // とや杏などの小字対応
+  const fontSize = kind.length > 1 ? 18 : 16; // とや杏などの小字対応
+
+  // 後手は SVG が 180° 回転するので、影・側面のオフセットを逆にして
+  // 画面上で常に右下に見えるようにする
+  const shadowDx = isWhite ? -1 : 1;
+  const shadowDy = isWhite ? -2 : 2;
+  const shadowTranslate = isWhite ? "translate(2,-2)" : "translate(2,2)";
+  const sideTranslate   = isWhite ? "translate(0.5,-2.5)" : "translate(3.5,2.5)";
 
   return (
     <svg
@@ -85,7 +92,7 @@ export function ShogiPiece({
 
         {/* ドロップシャドウ */}
         <filter id={shadowId} x="-20%" y="-10%" width="150%" height="150%">
-          <feDropShadow dx="1" dy="2" stdDeviation="1.5" floodColor="#5a3800" floodOpacity="0.45" />
+          <feDropShadow dx={shadowDx} dy={shadowDy} stdDeviation="1.5" floodColor="#5a3800" floodOpacity="0.45" />
         </filter>
 
         {/* ハイライト用クリップ */}
@@ -97,10 +104,19 @@ export function ShogiPiece({
       {/* ドロップシャドウ本体 */}
       <path
         d={PIECE_PATH}
-        transform="translate(2,2)"
+        transform={shadowTranslate}
         fill="#6b4000"
         opacity="0.25"
         filter={`url(#${shadowId})`}
+      />
+
+      {/* 側面レイヤー（立体感：右・下にずらして厚みを演出） */}
+      <path
+        d={PIECE_PATH}
+        transform={sideTranslate}
+        fill="#7a4808"
+        stroke="#5a3000"
+        strokeWidth="0.5"
       />
 
       {/* 駒本体：木目グラデーション */}
@@ -111,32 +127,6 @@ export function ShogiPiece({
         stroke={woodEdge}
         strokeWidth="1"
       />
-
-      {/* 上部ハイライト (光沢) */}
-      <ellipse
-        cx={PIECE_W / 2 + 2}
-        cy={PIECE_H * 0.28}
-        rx={PIECE_W * 0.28}
-        ry={PIECE_H * 0.10}
-        fill="white"
-        opacity="0.22"
-        clipPath={`url(#clip-${kind}-${color})`}
-      />
-
-      {/* 木目ライン */}
-      {[0.35, 0.55, 0.72].map((t, i) => (
-        <line
-          key={i}
-          x1={2 + PIECE_W * 0.1}
-          y1={PIECE_H * t}
-          x2={2 + PIECE_W * 0.9}
-          y2={PIECE_H * t + 1}
-          stroke={woodEdge}
-          strokeWidth="0.4"
-          opacity="0.18"
-          clipPath={`url(#clip-${kind}-${color})`}
-        />
-      ))}
 
       {/* 駒の文字 */}
       <text

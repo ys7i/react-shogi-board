@@ -28,6 +28,12 @@ export interface ShogiBoardProps {
   flipped?: boolean;
 }
 
+const LARGE_KINDS = new Set<Kind>(["KA", "HI", "OU"]);
+
+function pieceSize(kind: Kind, base: number) {
+  return LARGE_KINDS.has(kind) ? base : base * 0.82;
+}
+
 function PieceCell({
   piece,
   flipped,
@@ -44,7 +50,7 @@ function PieceCell({
     <ShogiPiece
       kind={piece.kind}
       color={displayColor as 0 | 1}
-      size={46}
+      size={pieceSize(piece.kind, 46)}
       highlighted={highlighted}
     />
   );
@@ -84,7 +90,7 @@ function HandArea({
                   <ShogiPiece
                 kind={kind}
                 color={isBottom ? color : (color === 0 ? 1 : 0)}
-                size={36}
+                size={pieceSize(kind, 36)}
               />
               {count > 1 && <sup className={styles.handCount}>{count}</sup>}
             </button>
