@@ -27,15 +27,6 @@ const PIECE_PATH = `
   Z
 `.trim();
 
-// 駒の「縁」をやや広げた影用パス
-const SHADOW_PATH = `
-  M ${PIECE_W / 2} 4
-  L ${PIECE_W} 18
-  L ${PIECE_W} ${PIECE_H + 2}
-  L 0 ${PIECE_H + 2}
-  L 0 18
-  Z
-`.trim();
 
 export function ShogiPiece({
   kind,
@@ -49,7 +40,6 @@ export function ShogiPiece({
 
   const svgW = PIECE_W + 4;  // ドロップシャドウ用の余白
   const svgH = PIECE_H + 6;
-  const scale = size / svgW;
 
   const woodLight = "#f5dfa0";
   const woodMid   = "#e8c870";

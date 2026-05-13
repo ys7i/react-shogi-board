@@ -1,21 +1,39 @@
 {
   "name": "react-shogi-board",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "React components for rendering and playing Shogi (Japanese Chess)",
   "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles": "./dist/index.css"
+  },
+  "files": ["dist"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ys7i/react-shogi-board.git"
+  },
+  "keywords": ["shogi", "react", "board", "japanese-chess"],
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "shogi.js": ">=5",
+    "json-kifu-format": ">=5"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:lib": "tsc -p tsconfig.lib.json && vite build --mode lib",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
-  },
-  "dependencies": {
-    "json-kifu-format": "^5.5.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "shogi.js": "^5.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

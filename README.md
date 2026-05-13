@@ -8,6 +8,20 @@ React 製の将棋盤コンポーネントライブラリです。
 
 ---
 
+## インストール
+
+```bash
+npm install react-shogi-board shogi.js json-kifu-format
+```
+
+スタイルを適用するため、エントリポイントで CSS をインポートしてください。
+
+```ts
+import "react-shogi-board/styles";
+```
+
+---
+
 ## コンポーネント
 
 ### `<InteractiveBoard>`
