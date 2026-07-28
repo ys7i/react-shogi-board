@@ -1,6 +1,6 @@
 {
   "name": "react-shogi-board",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React components for rendering and playing Shogi (Japanese Chess)",
   "type": "module",
   "main": "./dist/index.js",

@@ -23,8 +23,8 @@
 
 .board {
   display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  grid-template-rows: repeat(9, 1fr);
+  grid-template-columns: repeat(9, var(--cell-w, 54px));
+  grid-template-rows: repeat(9, var(--cell-h, 60px));
   border: 2px solid #5c3a1e;
   background-color: #f5deb3;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
@@ -36,8 +36,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 54px;
-  height: 60px;
+  width: var(--cell-w, 54px);
+  height: var(--cell-h, 60px);
   border-right: 1px solid #a0703a;
   border-bottom: 1px solid #a0703a;
   background: transparent;
@@ -92,7 +92,7 @@
 /* ===== Labels ===== */
 .colLabels {
   display: grid;
-  grid-template-columns: repeat(9, 54px);
+  grid-template-columns: repeat(9, var(--cell-w, 54px));
   padding-right: 20px; /* row label width compensation */
 }
 
@@ -113,7 +113,7 @@
   align-items: center;
   justify-content: center;
   width: 20px;
-  height: 60px;
+  height: var(--cell-h, 60px);
   font-size: 12px;
   color: #5c3a1e;
 }
@@ -123,7 +123,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 486px; /* 9 * 54px = 486 */
+  min-width: calc(9 * var(--cell-w, 54px));
   min-height: 52px;
   padding: 6px 10px;
   background-color: #e8d0a0;
@@ -157,8 +157,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 48px;
+  width: calc(var(--cell-w, 54px) * 7 / 9);
+  height: calc(var(--cell-h, 60px) * 4 / 5);
   background-color: #f5deb3;
   border: 1px solid #a0703a;
   border-radius: 3px;

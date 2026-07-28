@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from "react";
+import React, { forwardRef, useImperativeHandle } from "react";
 import Color from "shogi.js/cjs/Color";
 import { ShogiBoard } from "../ShogiBoard";
 import { useShogiGame } from "../../hooks/useShogiGame";
@@ -19,10 +19,12 @@ export interface InteractiveBoardProps {
   initialSfen?: string;
   /** 盤面が変化するたびに現在の SFEN を通知 */
   onChange?: (sfen: string) => void;
+  /** セル幅(px)。デフォルト54。縮小表示に使用 */
+  cellSize?: number;
 }
 
 export const InteractiveBoard = forwardRef<InteractiveBoardHandle, InteractiveBoardProps>(
-  function InteractiveBoard({ flipped = false, initialSfen, onChange }, ref) {
+  function InteractiveBoard({ flipped = false, initialSfen, onChange, cellSize }, ref) {
   const {
     shogi,
     selectedSquare,
@@ -40,8 +42,12 @@ export const InteractiveBoard = forwardRef<InteractiveBoardHandle, InteractiveBo
 
   const turnLabel = shogi.turn === Color.Black ? "先手番" : "後手番";
 
+  const cssVars = cellSize !== undefined
+    ? ({ '--cell-w': `${cellSize}px`, '--cell-h': `${Math.round(cellSize * 10 / 9)}px` } as React.CSSProperties)
+    : undefined;
+
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} style={cssVars}>
       {/* 成り確認ダイアログ */}
       {promotionPending && (
         <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="成り確認">
@@ -75,6 +81,7 @@ export const InteractiveBoard = forwardRef<InteractiveBoardHandle, InteractiveBo
         onSquareClick={onSquareClick}
         onHandClick={onHandClick}
         flipped={flipped}
+        cellSize={cellSize}
       />
 
       <div className={styles.statusBar}>

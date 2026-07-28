@@ -1,3 +1,4 @@
+import React from "react";
 import { Shogi, Color } from "shogi.js";
 import type { Kind } from "shogi.js";
 import type Piece from "shogi.js/cjs/Piece";
@@ -26,6 +27,8 @@ export interface ShogiBoardProps {
   onHandClick?: (kind: Kind, color: 0 | 1) => void;
   /** 盤面を反転して後手視点で表示するか */
   flipped?: boolean;
+  /** セル幅(px)。デフォルト54。縮小表示に使用 */
+  cellSize?: number;
 }
 
 const LARGE_KINDS = new Set<Kind>(["KA", "HI", "OU"]);
@@ -38,19 +41,20 @@ function PieceCell({
   piece,
   flipped,
   highlighted,
+  boardBase,
 }: {
   piece: Piece | null;
   flipped: boolean;
   highlighted?: boolean;
+  boardBase: number;
 }) {
   if (!piece) return null;
-  // flipped 時は盤面が上下反転しているので駒の向きは変わらない
   const displayColor = flipped ? (piece.color === Color.Black ? 1 : 0) : piece.color;
   return (
     <ShogiPiece
       kind={piece.kind}
       color={displayColor as 0 | 1}
-      size={pieceSize(piece.kind, 46)}
+      size={pieceSize(piece.kind, boardBase)}
       highlighted={highlighted}
     />
   );
@@ -61,13 +65,14 @@ function HandArea({
   color,
   flipped,
   onHandClick,
+  handBase,
 }: {
   shogi: Shogi;
   color: 0 | 1;
   flipped: boolean;
   onHandClick?: (kind: Kind, color: 0 | 1) => void;
+  handBase: number;
 }) {
-  // hands が未初期化の場合も考慮してフォールバック
   const summary = shogi.hands?.[color]
     ? shogi.getHandsSummary(color as Color)
     : { FU: 0, KY: 0, KE: 0, GI: 0, KI: 0, KA: 0, HI: 0 };
@@ -87,10 +92,10 @@ function HandArea({
               onClick={() => onHandClick?.(kind, color)}
               aria-label={`持ち駒 ${kindToKanji(kind)} ${count}枚`}
             >
-                  <ShogiPiece
+              <ShogiPiece
                 kind={kind}
                 color={isBottom ? color : (color === 0 ? 1 : 0)}
-                size={pieceSize(kind, 36)}
+                size={pieceSize(kind, handBase)}
               />
               {count > 1 && <sup className={styles.handCount}>{count}</sup>}
             </button>
@@ -109,10 +114,14 @@ export function ShogiBoard({
   onSquareClick,
   onHandClick,
   flipped = false,
+  cellSize,
 }: ShogiBoardProps) {
   const legalSet = new Set(legalSquares.map((p) => `${p.x},${p.y}`));
+  const scale = (cellSize ?? 54) / 54;
+  const boardBase = Math.round(46 * scale);
+  const handBase = Math.round(36 * scale);
+  const cellH = Math.round(60 * scale);
 
-  // 表示順: flipped=false → col 9→1 (左→右), row 1→9 (上→下)
   const cols = flipped
     ? [1, 2, 3, 4, 5, 6, 7, 8, 9]
     : [9, 8, 7, 6, 5, 4, 3, 2, 1];
@@ -120,14 +129,19 @@ export function ShogiBoard({
     ? [9, 8, 7, 6, 5, 4, 3, 2, 1]
     : [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
+  const cssVars = cellSize !== undefined
+    ? ({ '--cell-w': `${cellSize}px`, '--cell-h': `${cellH}px` } as React.CSSProperties)
+    : undefined;
+
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} style={cssVars}>
       {/* 後手持ち駒 */}
       <HandArea
         shogi={shogi}
         color={Color.White}
         flipped={flipped}
         onHandClick={onHandClick}
+        handBase={handBase}
       />
 
       <div className={styles.boardWrapper}>
@@ -163,7 +177,7 @@ export function ShogiBoard({
                     onClick={() => onSquareClick?.({ x, y })}
                   >
                     {piece && (
-                      <PieceCell piece={piece} flipped={flipped} highlighted={isSelected} />
+                      <PieceCell piece={piece} flipped={flipped} highlighted={isSelected} boardBase={boardBase} />
                     )}
                     {isLegal && !piece && (
                       <span className={styles.legalDot} aria-hidden="true" />
@@ -194,6 +208,7 @@ export function ShogiBoard({
         color={Color.Black}
         flipped={flipped}
         onHandClick={onHandClick}
+        handBase={handBase}
       />
     </div>
   );
